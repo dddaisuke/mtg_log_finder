@@ -1,0 +1,42 @@
+{
+  "name": "mtg log finder",
+  "author": "Daisuke Yamashita (@dddaisuke)",
+  "description": "This is a Chrome extension for find mtg logs on Google Drive.",
+  "icons": {
+    "16": "images/16x16.png",
+    "48": "images/48x48.png",
+    "128": "images/128x128.png"
+  },
+  "browser_action": {
+    "default_icon": "images/32x32.png",
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "alarms",
+    "tabs",
+    "webNavigation",
+    "identity",
+    "storage"
+  ],
+  "version": "2.1.1",
+  "manifest_version": 2,
+  "offline_enabled": false,
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Alt+U",
+        "mac": "Command+U",
+        "chromeos": "Alt+U",
+        "linux": "Alt+U"
+      }
+    }
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://apis.google.com/; object-src 'self'",
+  "oauth2": {
+    "client_id": "205730641287-nm2ql3at81jgentuqq6ogb7agjufbesh.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.metadata.readonly", "https://www.googleapis.com/auth/drive.readonly"
+    ]
+  }
+}
+

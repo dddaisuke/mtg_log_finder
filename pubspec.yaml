@@ -1,0 +1,27 @@
+name: mtg_log_finder
+description: An absolute bare-bones web app.
+version: 0.0.1
+#homepage: https://www.example.com
+#author: daisuke <email@example.com>
+
+environment:
+  sdk: '>=1.20.1 <2.0.0'
+
+#dependencies:
+#  path: ^1.4.1
+
+dev_dependencies:
+  browser: ^0.10.0
+  dart_to_js_script_rewriter: ^1.0.1
+  chrome: any
+  googleapis: any
+  googleapis_auth: any
+  google_oauth2_client: any
+  intl: any
+  dart_config: any
+
+transformers:
+- dart_to_js_script_rewriter
+- chrome
+- $dart2js:
+    csp: true
