@@ -56,7 +56,7 @@ void main() {
 
     List<File> files = new List<File>();
     int pageSize = 100;
-    
+
     insertFilterView(api, files, pageSize);
     insertSearchView(files);
 
@@ -97,7 +97,7 @@ void insertFilterView(drive.DriveApi api, List<File> files, int pageSize) {
   select.append(option50);
   select.append(option25);
 
-  select.onChange.listen((e){
+  select.onChange.listen((e) {
     pageSize = int.parse(select.value);
     files.clear();
     loadDriveFiles(api, files, pageSize);
@@ -106,32 +106,58 @@ void insertFilterView(drive.DriveApi api, List<File> files, int pageSize) {
 }
 
 void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
-  // manabo/MtgLogs/2017/2017_2Q
-  api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5SERvaW9uVGhPd1k' in parents", pageSize: pageSize).then((
+  // manabo/MtgLogs/2017/2017_3Q
+  api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5d0dhODhNbkZNUnM' in parents", pageSize: pageSize).then((
     list) {
+    window.console.log('0B7gIZmKENAt5d0dhODhNbkZNUnM');
     files.addAll(toFileList(list.files, false));
 
     files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     removeDocument();
     loadDocuments(files);
 
-    // Confidentials/ConfidentialMtgLogs/2017/2017_2Q
-    api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize).then((
-      list) {
-      files.addAll(toFileList(list.files, true));
+    // manabo/MtgLogs/2017/2017_2Q
+    api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5SERvaW9uVGhPd1k' in parents", pageSize: pageSize)
+      .then((list) {
+      window.console.log('0B7gIZmKENAt5SERvaW9uVGhPd1k');
+      files.addAll(toFileList(list.files, false));
 
       files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       removeDocument();
       loadDocuments(files);
 
-      // エンジニア面談
-      api.files.list(orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SMnA5SWFDWHd0WGs' in parents", pageSize: pageSize).then((
-        list) {
+      // Confidentials/ConfidentialMtgLogs/2017/2017_3Q
+      api.files.list(orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ' in parents", pageSize: pageSize)
+        .then((list) {
+        window.console.log('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ');
         files.addAll(toFileList(list.files, true));
 
         files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
         removeDocument();
         loadDocuments(files);
+
+        // Confidentials/ConfidentialMtgLogs/2017/2017_2Q
+        api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize)
+          .then((list) {
+          window.console.log('0B7gIZmKENAt5ejZKOFR0b2hQVU0');
+          files.addAll(toFileList(list.files, true));
+
+          files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          removeDocument();
+          loadDocuments(files);
+
+          // エンジニア面談
+          api.files.list(
+            orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SMnA5SWFDWHd0WGs' in parents", pageSize: pageSize).then((
+            list) {
+            window.console.log('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs');
+            files.addAll(toFileList(list.files, true));
+
+            files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+            removeDocument();
+            loadDocuments(files);
+          });
+        });
       });
     });
   });
