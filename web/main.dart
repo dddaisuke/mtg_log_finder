@@ -15,11 +15,13 @@ final scopes = [drive.DriveApi.DriveMetadataReadonlyScope, drive.DriveApi.DriveR
 class File {
   drive.File driveFile;
   bool isHidden;
+  String icon;
   String timestamp;
   String title;
 
-  File(drive.File _file, bool _isHidden) {
+  File(drive.File _file, bool _isHidden, String _icon) {
     driveFile = _file;
+    icon = _icon;
     isHidden = _isHidden;
     title = _file.name.toString();
     List<String> strings = title.split('_');
@@ -27,10 +29,10 @@ class File {
   }
 }
 
-List<File> toFileList(List<drive.File> _files, bool _isHidden) {
+List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
   List<File> files = new List<File>();
   for (drive.File file in _files) {
-    files.add(new File(file, _isHidden));
+    files.add(new File(file, _isHidden, _icon));
   }
   return files;
 }
@@ -110,7 +112,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
   api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5d0dhODhNbkZNUnM' in parents", pageSize: pageSize).then((
     list) {
     window.console.log('0B7gIZmKENAt5d0dhODhNbkZNUnM');
-    files.addAll(toFileList(list.files, false));
+    files.addAll(toFileList(list.files, false, null));
 
     files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     removeDocument();
@@ -120,7 +122,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
     api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5SERvaW9uVGhPd1k' in parents", pageSize: pageSize)
       .then((list) {
       window.console.log('0B7gIZmKENAt5SERvaW9uVGhPd1k');
-      files.addAll(toFileList(list.files, false));
+      files.addAll(toFileList(list.files, false, null));
 
       files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       removeDocument();
@@ -130,7 +132,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
       api.files.list(orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ' in parents", pageSize: pageSize)
         .then((list) {
         window.console.log('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ');
-        files.addAll(toFileList(list.files, true));
+        files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
         files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
         removeDocument();
@@ -140,7 +142,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
         api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize)
           .then((list) {
           window.console.log('0B7gIZmKENAt5ejZKOFR0b2hQVU0');
-          files.addAll(toFileList(list.files, true));
+          files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
           files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
           removeDocument();
@@ -151,7 +153,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
             orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SMnA5SWFDWHd0WGs' in parents", pageSize: pageSize).then((
             list) {
             window.console.log('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs');
-            files.addAll(toFileList(list.files, true));
+            files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
             files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
             removeDocument();
@@ -224,7 +226,7 @@ Element createAnchorElement(File file) {
   DivElement div = new DivElement();
   if (file.isHidden) {
     div.setAttribute('class', 'link hidden');
-    ImageElement img = new ImageElement(src: 'images/private-16.png');
+    ImageElement img = new ImageElement(src: file.icon);
     img.setAttribute('class', 'private');
     div.append(img);
   } else {
