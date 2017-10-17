@@ -18,12 +18,14 @@ class File {
   String icon;
   String timestamp;
   String title;
+  bool isFolder;
 
   File(drive.File _file, bool _isHidden, String _icon) {
     driveFile = _file;
     icon = _icon;
     isHidden = _isHidden;
     title = _file.name.toString();
+    isFolder = (_file.mimeType == 'application/vnd.google-apps.folder');
     List<String> strings = title.split('_');
     timestamp = strings.first;
   }
@@ -236,7 +238,12 @@ void loadDocuments(List<File> files) {
 
 Element createAnchorElement(File file) {
   DivElement div = new DivElement();
-  if (file.isHidden) {
+  if (file.isFolder) {
+    div.setAttribute('class', 'link hidden');
+    ImageElement img = new ImageElement(src: 'images/folder-16.png');
+    img.setAttribute('class', 'private');
+    div.append(img);
+  } else if (file.isHidden) {
     div.setAttribute('class', 'link hidden');
     ImageElement img = new ImageElement(src: file.icon);
     img.setAttribute('class', 'private');
@@ -247,7 +254,11 @@ Element createAnchorElement(File file) {
 
   AnchorElement aElement = new AnchorElement();
   aElement.appendText(file.driveFile.name.toString());
-  aElement.href = "https://docs.google.com/a/manabo.com/document/d/" + file.driveFile.id.toString() + "/edit";
+  if (file.isFolder) {
+    aElement.href = "https://drive.google.com/drive/folders/" + file.driveFile.id.toString();
+  } else {
+    aElement.href = "https://docs.google.com/a/manabo.com/document/d/" + file.driveFile.id.toString() + "/edit";
+  }
   aElement.target = '_blank';
   div.append(aElement);
   return div;
