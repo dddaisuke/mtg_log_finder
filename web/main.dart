@@ -158,6 +158,18 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
             files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
             removeDocument();
             loadDocuments(files);
+
+            // ICO/MtgLogs
+            api.files.list(
+              orderBy: 'createdTime desc', q: "'0B4oiy9QA-HVNaEp2ejdWamlHVzg' in parents", pageSize: pageSize).then((
+              list) {
+              window.console.log('0B4oiy9QA-HVNaEp2ejdWamlHVzg');
+              files.addAll(toFileList(list.files, true, 'images/ethereum-16.png'));
+
+              files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+              removeDocument();
+              loadDocuments(files);
+            });
           });
         });
       });
