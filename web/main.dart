@@ -116,7 +116,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
     window.console.log('0B7gIZmKENAt5d0dhODhNbkZNUnM');
     files.addAll(toFileList(list.files, false, null));
 
-    files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    files.sort((a, b) => b.title.compareTo(a.title));
     removeDocument();
     loadDocuments(files);
 
@@ -126,7 +126,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
       window.console.log('0B7gIZmKENAt5SERvaW9uVGhPd1k');
       files.addAll(toFileList(list.files, false, null));
 
-      files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      files.sort((a, b) => b.title.compareTo(a.title));
       removeDocument();
       loadDocuments(files);
 
@@ -136,7 +136,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
         window.console.log('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ');
         files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
-        files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        files.sort((a, b) => b.title.compareTo(a.title));
         removeDocument();
         loadDocuments(files);
 
@@ -146,7 +146,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
           window.console.log('0B7gIZmKENAt5ejZKOFR0b2hQVU0');
           files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
-          files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          files.sort((a, b) => b.title.compareTo(a.title));
           removeDocument();
           loadDocuments(files);
 
@@ -157,7 +157,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
             window.console.log('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs');
             files.addAll(toFileList(list.files, true, 'images/private-16.png'));
 
-            files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+            files.sort((a, b) => b.title.compareTo(a.title));
             removeDocument();
             loadDocuments(files);
 
@@ -168,7 +168,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
               window.console.log('0B4oiy9QA-HVNaEp2ejdWamlHVzg');
               files.addAll(toFileList(list.files, true, 'images/ethereum-16.png'));
 
-              files.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+              files.sort((a, b) => b.title.compareTo(a.title));
               removeDocument();
               loadDocuments(files);
             });
