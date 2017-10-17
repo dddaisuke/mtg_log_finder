@@ -198,6 +198,8 @@ void removeDocument() {
   todayDocuments.innerHtml = '';
   DivElement lastWeek = querySelector('#last_week_documents');
   lastWeek.innerHtml = '';
+  DivElement futureDocuments = querySelector('#future_documents');
+  futureDocuments.innerHtml = '';
   DivElement searched = querySelector('#serached_documents');
   searched.innerHtml = '';
 }
@@ -205,6 +207,7 @@ void removeDocument() {
 void loadDocuments(List<File> files) {
   DivElement todayDocuments = querySelector('#today_documents');
   DivElement lastWeek = querySelector('#last_week_documents');
+  DivElement futureDocuments = querySelector('#future_documents');
   DivElement searched = querySelector('#serached_documents');
 
   var title1 = new DivElement();
@@ -215,6 +218,10 @@ void loadDocuments(List<File> files) {
   title2.text = "■ 先週の資料";
   title2.setAttribute('class', 'title');
   lastWeek.append(title2);
+  var titleFuture = new DivElement();
+  titleFuture.text = "■ 未来の資料";
+  titleFuture.setAttribute('class', 'title');
+  futureDocuments.append(titleFuture);
   var title3 = new DivElement();
   title3.text = "■ 直近の資料";
   title3.setAttribute('class', 'title');
@@ -230,6 +237,8 @@ void loadDocuments(List<File> files) {
       todayDocuments.append(createAnchorElement(file));
     } else if (name.startsWith(new RegExp(r'^' + oneWeekAgo))) {
       lastWeek.append(createAnchorElement(file));
+    } else if (int.parse(file.timestamp) > int.parse(today)) {
+      futureDocuments.append(createAnchorElement(file));
     } else {
       searched.append(createAnchorElement(file));
     }
