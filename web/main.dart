@@ -26,8 +26,7 @@ class File {
     isHidden = _isHidden;
     title = _file.name.toString();
     isFolder = (_file.mimeType == 'application/vnd.google-apps.folder');
-    List<String> strings = title.split('_');
-    timestamp = strings.first;
+    timestamp = title.substring(0,8);
   }
 }
 
