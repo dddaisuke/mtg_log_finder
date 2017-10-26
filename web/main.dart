@@ -26,14 +26,24 @@ class File {
     isHidden = _isHidden;
     title = _file.name.toString();
     isFolder = (_file.mimeType == 'application/vnd.google-apps.folder');
-    timestamp = title.substring(0,8);
+
+    bool isMatch = new RegExp('^\\d[0,7]').hasMatch(title);
+    if (isMatch) {
+      timestamp = title.substring(0,8);
+    } else{
+      window.alert("「" + title + "」が不正なタイトルです。");
+      timestamp = null;
+    }
   }
 }
 
 List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
   List<File> files = new List<File>();
-  for (drive.File file in _files) {
-    files.add(new File(file, _isHidden, _icon));
+  for (drive.File driveFile in _files) {
+    File file = new File(driveFile, _isHidden, _icon);
+    if(file.timestamp != null) {
+      files.add(file);
+    }
   }
   return files;
 }
