@@ -90,6 +90,11 @@ void insertSearchView(List<File> files) {
     List<File> filteredFiles = filter(files, input.value);
     loadDocuments(filteredFiles);
   });
+  window.onKeyUp.listen((KeyboardEvent e) {
+    if (e.keyCode == KeyCode.SLASH) {
+      input.focus();
+    }
+  });
   search.append(input);
 }
 
