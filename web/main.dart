@@ -31,7 +31,9 @@ class File {
     if (isMatch) {
       timestamp = title.substring(0,8);
     } else{
-      window.alert("「" + title + "」が不正なタイトルです。");
+      DivElement divError = querySelector('#error');
+      divError.appendHtml("「" + title + "」が不正なタイトルです。");
+      divError.append(new BRElement());
       timestamp = null;
     }
   }
