@@ -27,7 +27,7 @@ class File {
     title = _file.name.toString();
     isFolder = (_file.mimeType == 'application/vnd.google-apps.folder');
 
-    bool isMatch = new RegExp('^\\d[0,7]').hasMatch(title);
+    bool isMatch = new RegExp(r"^\d{8}").hasMatch(title);
     if (isMatch) {
       timestamp = title.substring(0,8);
     } else{
@@ -248,7 +248,6 @@ void loadDocuments(List<File> files) {
 
   for (File file in files) {
     String name = file.driveFile.name.toString();
-
     if (name.startsWith(new RegExp(r'^' + today))) {
       todayDocuments.append(createAnchorElement(file));
     } else if (name.startsWith(new RegExp(r'^' + oneWeekAgo))) {
