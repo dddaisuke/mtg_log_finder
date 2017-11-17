@@ -29,8 +29,8 @@ class File {
 
     bool isMatch = new RegExp(r"^\d{8}").hasMatch(title);
     if (isMatch) {
-      timestamp = title.substring(0,8);
-    } else{
+      timestamp = title.substring(0, 8);
+    } else {
       DivElement divError = querySelector('#error');
       divError.appendHtml("「" + title + "」が不正なタイトルです。");
       divError.append(new BRElement());
@@ -43,7 +43,7 @@ List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
   List<File> files = new List<File>();
   for (drive.File driveFile in _files) {
     File file = new File(driveFile, _isHidden, _icon);
-    if(file.timestamp != null) {
+    if (file.timestamp != null) {
       files.add(file);
     }
   }
@@ -148,8 +148,7 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
 
       // ICO/MtgLogs
       api.files.list(
-        orderBy: 'createdTime desc', q: "'0B4oiy9QA-HVNaEp2ejdWamlHVzg' in parents", pageSize: pageSize).then((
-        list) {
+        orderBy: 'createdTime desc', q: "'0B4oiy9QA-HVNaEp2ejdWamlHVzg' in parents", pageSize: pageSize).then((list) {
         window.console.log('0B4oiy9QA-HVNaEp2ejdWamlHVzg');
         files.addAll(toFileList(list.files, true, 'images/ethereum-16.png'));
 
@@ -168,7 +167,8 @@ void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
           loadDocuments(files);
 
           // Confidentials/ConfidentialMtgLogs/2017/2017_2Q
-          api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize)
+          api.files.list(
+            orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize)
             .then((list) {
             window.console.log('0B7gIZmKENAt5ejZKOFR0b2hQVU0');
             files.addAll(toFileList(list.files, true, 'images/private-16.png'));
