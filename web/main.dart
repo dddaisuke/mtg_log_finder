@@ -6,9 +6,7 @@ import 'package:googleapis_auth/auth_browser.dart' as auth;
 import 'package:intl/intl.dart';
 //import 'package:dart_config/default_browser.dart';
 
-final identifier = new auth.ClientId(
-  "205730641287-cnq8o1231krttqtssiru8ddj0i985ml3.apps.googleusercontent.com",
-  null);
+final identifier = new auth.ClientId("205730641287-cnq8o1231krttqtssiru8ddj0i985ml3.apps.googleusercontent.com", null);
 
 final scopes = [drive.DriveApi.DriveMetadataReadonlyScope, drive.DriveApi.DriveReadonlyScope];
 
@@ -36,6 +34,20 @@ class File {
       divError.append(new BRElement());
       timestamp = null;
     }
+  }
+}
+
+class Folder {
+  String hash;
+  bool isHidden;
+  String imagePath;
+  String memo;
+
+  Folder(String _hash, bool _isHidden, String _imagePath, String _memo) {
+    this.hash = _hash;
+    this.isHidden = _isHidden;
+    this.imagePath = _imagePath;
+    this.memo = _memo;
   }
 }
 
@@ -72,10 +84,21 @@ void main() {
     List<File> files = new List<File>();
     int pageSize = 100;
 
-    insertFilterView(api, files, pageSize);
+    List<Folder> folders = new List<Folder>();
+    folders.add(new Folder('1YdzV1HFp2gT4mwuAVZtvt_lvnHpPpfIg', false, null, 'manabo/MtgLogs/2017/2017_4Q'));
+    folders.add(new Folder('0B7gIZmKENAt5d0dhODhNbkZNUnM', false, null, 'manabo/MtgLogs/2017/2017_3Q'));
+//    folders.add(new Folder('0B7gIZmKENAt5SERvaW9uVGhPd1k', false, null, 'manabo/MtgLogs/2017/2017_2Q'));
+//    folders.add(new Folder('0B4oiy9QA-HVNaEp2ejdWamlHVzg', true, 'images/ethereum-16.png', 'ICO/MtgLogs'));
+    folders.add(new Folder('1fuimW9T80vOV1MvWE2UJRCfZJhmVp9qh', true, 'images/private-16.png',
+        'Confidentials/ConfidentialMtgLogs/2017/2017_4Q'));
+    folders.add(new Folder('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ', true, 'images/private-16.png',
+        'Confidentials/ConfidentialMtgLogs/2017/2017_3Q'));
+//    folders.add(new Folder('0B7gIZmKENAt5ejZKOFR0b2hQVU0', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_2Q'));
+    folders.add(new Folder('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs', true, 'images/private-16.png', 'エンジニア面談'));
+    insertFilterView(api, folders, files, pageSize);
     insertSearchView(files);
 
-    loadDriveFiles(api, files, pageSize);
+    loadDriveFiles(api, folders, files, pageSize);
   });
 }
 
@@ -100,7 +123,7 @@ void insertSearchView(List<File> files) {
   search.append(input);
 }
 
-void insertFilterView(drive.DriveApi api, List<File> files, int pageSize) {
+void insertFilterView(drive.DriveApi api, List<Folder> folders, List<File> files, int pageSize) {
   var filterDiv = querySelector('#filter');
 
   SpanElement divCount = new SpanElement();
@@ -120,77 +143,20 @@ void insertFilterView(drive.DriveApi api, List<File> files, int pageSize) {
   select.onChange.listen((e) {
     pageSize = int.parse(select.value);
     files.clear();
-    loadDriveFiles(api, files, pageSize);
+    loadDriveFiles(api, folders, files, pageSize);
   });
   filterDiv.append(select);
 }
 
-void loadDriveFiles(drive.DriveApi api, List<File> files, int pageSize) {
-  // manabo/MtgLogs/2017/2017_3Q
-  api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5d0dhODhNbkZNUnM' in parents", pageSize: pageSize).then((
-    list) {
-    window.console.log('0B7gIZmKENAt5d0dhODhNbkZNUnM');
-    files.addAll(toFileList(list.files, false, null));
-
-    files.sort((a, b) => b.title.compareTo(a.title));
-    removeDocument();
-    loadDocuments(files);
-
-    // manabo/MtgLogs/2017/2017_2Q
-    api.files.list(orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5SERvaW9uVGhPd1k' in parents", pageSize: pageSize)
-      .then((list) {
-      window.console.log('0B7gIZmKENAt5SERvaW9uVGhPd1k');
-      files.addAll(toFileList(list.files, false, null));
+void loadDriveFiles(drive.DriveApi api, List<Folder> folders, List<File> files, int pageSize) {
+  folders.forEach((Folder folder) {
+    api.files.list(orderBy: 'createdTime desc', q: "'" + folder.hash + "' in parents", pageSize: pageSize).then((list) {
+      window.console.log(folder.hash);
+      files.addAll(toFileList(list.files, folder.isHidden, folder.imagePath));
 
       files.sort((a, b) => b.title.compareTo(a.title));
       removeDocument();
       loadDocuments(files);
-
-      // ICO/MtgLogs
-      api.files.list(
-        orderBy: 'createdTime desc', q: "'0B4oiy9QA-HVNaEp2ejdWamlHVzg' in parents", pageSize: pageSize).then((list) {
-        window.console.log('0B4oiy9QA-HVNaEp2ejdWamlHVzg');
-        files.addAll(toFileList(list.files, true, 'images/ethereum-16.png'));
-
-        files.sort((a, b) => b.title.compareTo(a.title));
-        removeDocument();
-        loadDocuments(files);
-
-        // Confidentials/ConfidentialMtgLogs/2017/2017_3Q
-        api.files.list(orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ' in parents", pageSize: pageSize)
-          .then((list) {
-          window.console.log('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ');
-          files.addAll(toFileList(list.files, true, 'images/private-16.png'));
-
-          files.sort((a, b) => b.title.compareTo(a.title));
-          removeDocument();
-          loadDocuments(files);
-
-          // Confidentials/ConfidentialMtgLogs/2017/2017_2Q
-          api.files.list(
-            orderBy: 'createdTime desc', q: "'0B7gIZmKENAt5ejZKOFR0b2hQVU0' in parents", pageSize: pageSize)
-            .then((list) {
-            window.console.log('0B7gIZmKENAt5ejZKOFR0b2hQVU0');
-            files.addAll(toFileList(list.files, true, 'images/private-16.png'));
-
-            files.sort((a, b) => b.title.compareTo(a.title));
-            removeDocument();
-            loadDocuments(files);
-
-            // エンジニア面談
-            api.files.list(
-              orderBy: 'createdTime desc', q: "'0B2t1uXRrSZ4SMnA5SWFDWHd0WGs' in parents", pageSize: pageSize).then((
-              list) {
-              window.console.log('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs');
-              files.addAll(toFileList(list.files, true, 'images/private-16.png'));
-
-              files.sort((a, b) => b.title.compareTo(a.title));
-              removeDocument();
-              loadDocuments(files);
-            });
-          });
-        });
-      });
     });
   });
 }
@@ -291,8 +257,7 @@ Element createAnchorElement(File file) {
 // Obtain an authenticated HTTP client which can be used for accessing Google
 // APIs.
 Future authorizedClient(InputElement loginButton, auth.ClientId id, scopes) {
-  return auth.createImplicitBrowserFlow(id, scopes)
-    .then((auth.BrowserOAuth2Flow flow) {
+  return auth.createImplicitBrowserFlow(id, scopes).then((auth.BrowserOAuth2Flow flow) {
     return flow.clientViaUserConsent(immediate: false).catchError((_) {
       return loginButton.onClick.first.then((_) {
         return flow.clientViaUserConsent(immediate: true);
