@@ -94,6 +94,7 @@ void main() {
     folders.add(new Folder('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ', true, 'images/private-16.png',
         'Confidentials/ConfidentialMtgLogs/2017/2017_3Q'));
 //    folders.add(new Folder('0B7gIZmKENAt5ejZKOFR0b2hQVU0', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_2Q'));
+    folders.add(new Folder('1FZr34hrkpzeNuVNXNEmM5SRDvUmIoilv', true, 'images/up-16.png', '取締役会議事録'));
     folders.add(new Folder('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs', true, 'images/private-16.png', 'エンジニア面談'));
     insertFilterView(api, folders, files, pageSize);
     insertSearchView(files);
