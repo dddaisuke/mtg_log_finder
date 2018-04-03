@@ -28,6 +28,9 @@ class File {
     bool isMatch = new RegExp(r"^\d{8}").hasMatch(title);
     if (isMatch) {
       timestamp = title.substring(0, 8);
+    } else if (isFolder) {
+      // 不正なタイトルでも許容する
+      timestamp = null;
     } else {
       DivElement divError = querySelector('#error');
       divError.appendHtml("「" + title + "」が不正なタイトルです。");
@@ -56,6 +59,8 @@ List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
   for (drive.File driveFile in _files) {
     File file = new File(driveFile, _isHidden, _icon);
     if (file.timestamp != null) {
+      files.add(file);
+    } else if (file.isFolder) {
       files.add(file);
     }
   }
@@ -177,6 +182,8 @@ String getOneWeekAgo() {
 }
 
 void removeDocument() {
+  DivElement folderDocuments = querySelector('#folder_documents');
+  folderDocuments.innerHtml = '';
   DivElement todayDocuments = querySelector('#today_documents');
   todayDocuments.innerHtml = '';
   DivElement lastWeek = querySelector('#last_week_documents');
@@ -188,6 +195,7 @@ void removeDocument() {
 }
 
 void loadDocuments(List<File> files) {
+  DivElement folderDocuments = querySelector('#folder_documents');
   DivElement todayDocuments = querySelector('#today_documents');
   DivElement lastWeek = querySelector('#last_week_documents');
   DivElement futureDocuments = querySelector('#future_documents');
@@ -212,15 +220,16 @@ void loadDocuments(List<File> files) {
 
   String today = getToday();
   String oneWeekAgo = getOneWeekAgo();
-
   for (File file in files) {
     String name = file.driveFile.name.toString();
     if (name.startsWith(new RegExp(r'^' + today))) {
       todayDocuments.append(createAnchorElement(file));
     } else if (name.startsWith(new RegExp(r'^' + oneWeekAgo))) {
       lastWeek.append(createAnchorElement(file));
-    } else if (int.parse(file.timestamp) > int.parse(today)) {
+    } else if (file.timestamp != null && int.parse(file.timestamp) > int.parse(today)) {
       futureDocuments.append(createAnchorElement(file));
+    } else if (file.timestamp == null && file.isFolder) {
+      folderDocuments.append(createAnchorElement(file));
     } else {
       searched.append(createAnchorElement(file));
     }

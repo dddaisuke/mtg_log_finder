@@ -28,6 +28,10 @@ img.private {
     font-size: 18px;
 }
 
+#folder_documents {
+    margin: 10px;
+}
+
 #today_documents {
     margin: 10px;
 }
