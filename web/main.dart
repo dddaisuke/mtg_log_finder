@@ -86,8 +86,8 @@ void main() {
   authorizedClient(loginButton, identifier, scopes).then((client) {
     drive.DriveApi api = new drive.DriveApi(client);
 
-    DivElement main = querySelector('#main');
-    main.remove();
+    DivElement login = querySelector('#login');
+    login.remove();
 
     List<File> files = new List<File>();
     int pageSize = 100;
@@ -104,6 +104,9 @@ void main() {
 //    folders.add(new Folder('0B7gIZmKENAt5ejZKOFR0b2hQVU0', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_2Q'));
     folders.add(new Folder('1FZr34hrkpzeNuVNXNEmM5SRDvUmIoilv', true, 'images/up-16.png', '取締役会議事録'));
     folders.add(new Folder('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs', true, 'images/private-16.png', 'エンジニア面談'));
+
+    setupMainView();
+
     insertFilterView(api, folders, files, pageSize);
     insertSearchView(files);
 
@@ -185,6 +188,9 @@ String getOneWeekAgo() {
 }
 
 void removeDocument() {
+//  DivElement mainDiv = querySelector('#main');
+//  mainDiv.innerHtml = '';
+
   DivElement folderDocuments = querySelector('#folder_documents');
   folderDocuments.innerHtml = '';
   DivElement todayDocuments = querySelector('#today_documents');
@@ -195,6 +201,36 @@ void removeDocument() {
   futureDocuments.innerHtml = '';
   DivElement searched = querySelector('#serached_documents');
   searched.innerHtml = '';
+}
+
+void setupMainView() {
+  DivElement mainDiv = querySelector('#main');
+
+  DivElement errorDiv = new DivElement();
+  errorDiv.setAttribute('id', 'error');
+  mainDiv.append(errorDiv);
+  DivElement filterDiv = new DivElement();
+  filterDiv.setAttribute('id', 'filter');
+  mainDiv.append(filterDiv);
+  DivElement searchDiv = new DivElement();
+  searchDiv.setAttribute('id', 'search');
+  mainDiv.append(searchDiv);
+
+  UListElement folderDocuments = new UListElement();
+  folderDocuments.setAttribute('id', 'folder_documents');
+  mainDiv.append(folderDocuments);
+  UListElement todayDocuments = new UListElement();
+  todayDocuments.setAttribute('id', 'today_documents');
+  mainDiv.append(todayDocuments);
+  UListElement lastWeek = new UListElement();
+  lastWeek.setAttribute('id', 'last_week_documents');
+  mainDiv.append(lastWeek);
+  UListElement futureDocuments = new UListElement();
+  futureDocuments.setAttribute('id', 'future_documents');
+  mainDiv.append(futureDocuments);
+  UListElement searched = new UListElement();
+  searched.setAttribute('id', 'serached_documents');
+  mainDiv.append(searched);
 }
 
 void loadDocuments(List<File> files) {
@@ -240,19 +276,19 @@ void loadDocuments(List<File> files) {
 }
 
 Element createAnchorElement(File file) {
-  DivElement div = new DivElement();
+  LIElement li = new LIElement();
   if (file.isFolder) {
-    div.setAttribute('class', 'link hidden');
+    li.setAttribute('class', 'link hidden');
     ImageElement img = new ImageElement(src: 'images/folder-16.png');
     img.setAttribute('class', 'private');
-    div.append(img);
+    li.append(img);
   } else if (file.isHidden) {
-    div.setAttribute('class', 'link hidden');
+    li.setAttribute('class', 'link hidden');
     ImageElement img = new ImageElement(src: file.icon);
     img.setAttribute('class', 'private');
-    div.append(img);
+    li.append(img);
   } else {
-    div.setAttribute('class', 'link public');
+    li.setAttribute('class', 'link public');
   }
 
   AnchorElement aElement = new AnchorElement();
@@ -263,8 +299,8 @@ Element createAnchorElement(File file) {
     aElement.href = "https://docs.google.com/a/manabo.com/document/d/" + file.driveFile.id.toString() + "/edit";
   }
   aElement.target = '_blank';
-  div.append(aElement);
-  return div;
+  li.append(aElement);
+  return li;
 }
 
 // Obtain an authenticated HTTP client which can be used for accessing Google
