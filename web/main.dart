@@ -6,7 +6,10 @@ import 'package:googleapis_auth/auth_browser.dart' as auth;
 import 'package:intl/intl.dart';
 //import 'package:dart_config/default_browser.dart';
 
+// server side
 final identifier = new auth.ClientId("205730641287-cnq8o1231krttqtssiru8ddj0i985ml3.apps.googleusercontent.com", null);
+// localhost
+//final identifier = new auth.ClientId("205730641287-b74p81rbe4np53rp120inn39mlve3jq5.apps.googleusercontent.com", null);
 
 final scopes = [drive.DriveApi.DriveMetadataReadonlyScope, drive.DriveApi.DriveReadonlyScope];
 
