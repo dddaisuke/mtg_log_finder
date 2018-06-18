@@ -1,6 +1,22 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto);
 
 html, body {
+    /*  フォントの種類  */
+    font-family: -apple-system, BlinkMacSystemFont,
+    "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+
+    /*  フォントのサイズ  */
+    font-size: 16px;
+
+    /*  フォントの色  */
+    font-size: #333;
+
+    /* カーニングの設定 */
+    letter-spacing: 1.5px;
+
+    /* 行間の設定 */
+    line-height: 1.75;
+
     width: 100%;
     height: 100%;
     margin: 0;
@@ -46,4 +62,30 @@ img.private {
 
 #serached_documents {
     margin: 10px;
+}
+
+ul {
+    padding: 0.3em 0.8em;
+    border: solid 2px #ffb107;
+}
+
+ul li {
+    list-style: none;
+    border-bottom: dashed 1px orange;
+    position: relative;
+    padding: 0.5em 0.5em 0.5em 30px;
+    line-height: 1.5em;
+}
+
+ul li:before {
+    top: 50%;
+    -moz-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+ul li:last-of-type {
+    border-bottom: none;
 }
