@@ -19,9 +19,12 @@ dev_dependencies:
   google_oauth2_client: any
   intl: any
   dart_config: any
+  sass: any
 
 transformers:
 - dart_to_js_script_rewriter
+- sass:
+    style: compressed
 - chrome
 - $dart2js:
     csp: true
