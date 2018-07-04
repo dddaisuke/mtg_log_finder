@@ -161,15 +161,15 @@ void removeDocument() {
 //  DivElement mainDiv = querySelector('#main');
 //  mainDiv.innerHtml = '';
 
-  DivElement folderDocuments = querySelector('#folder_documents');
+  UListElement folderDocuments = querySelector('#folder_documents');
   folderDocuments.innerHtml = '';
-  DivElement todayDocuments = querySelector('#today_documents');
+  UListElement todayDocuments = querySelector('#today_documents');
   todayDocuments.innerHtml = '';
-  DivElement lastWeek = querySelector('#last_week_documents');
+  UListElement lastWeek = querySelector('#last_week_documents');
   lastWeek.innerHtml = '';
-  DivElement futureDocuments = querySelector('#future_documents');
+  UListElement futureDocuments = querySelector('#future_documents');
   futureDocuments.innerHtml = '';
-  DivElement searched = querySelector('#serached_documents');
+  UListElement searched = querySelector('#serached_documents');
   searched.innerHtml = '';
 }
 
@@ -188,27 +188,32 @@ void setupMainView() {
 
   UListElement folderDocuments = new UListElement();
   folderDocuments.setAttribute('id', 'folder_documents');
+  folderDocuments.setAttribute('class', 'documents');
   mainDiv.append(folderDocuments);
   UListElement todayDocuments = new UListElement();
   todayDocuments.setAttribute('id', 'today_documents');
+  todayDocuments.setAttribute('class', 'documents');
   mainDiv.append(todayDocuments);
   UListElement lastWeek = new UListElement();
   lastWeek.setAttribute('id', 'last_week_documents');
+  lastWeek.setAttribute('class', 'documents');
   mainDiv.append(lastWeek);
   UListElement futureDocuments = new UListElement();
   futureDocuments.setAttribute('id', 'future_documents');
+  futureDocuments.setAttribute('class', 'documents');
   mainDiv.append(futureDocuments);
   UListElement searched = new UListElement();
   searched.setAttribute('id', 'serached_documents');
+  searched.setAttribute('class', 'documents');
   mainDiv.append(searched);
 }
 
 void loadDocuments(List<MtgFile> files) {
-  DivElement folderDocuments = querySelector('#folder_documents');
-  DivElement todayDocuments = querySelector('#today_documents');
-  DivElement lastWeek = querySelector('#last_week_documents');
-  DivElement futureDocuments = querySelector('#future_documents');
-  DivElement searched = querySelector('#serached_documents');
+  UListElement folderDocuments = querySelector('#folder_documents');
+  UListElement todayDocuments = querySelector('#today_documents');
+  UListElement lastWeek = querySelector('#last_week_documents');
+  UListElement futureDocuments = querySelector('#future_documents');
+  UListElement searched = querySelector('#serached_documents');
 
   var title1 = new DivElement();
   title1.text = "■ 本日の資料";
