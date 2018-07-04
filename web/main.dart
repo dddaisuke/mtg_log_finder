@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'file.dart';
+
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:googleapis_auth/auth_browser.dart' as auth;
 import 'package:intl/intl.dart';
@@ -12,36 +14,6 @@ final identifier = new auth.ClientId("205730641287-cnq8o1231krttqtssiru8ddj0i985
 //final identifier = new auth.ClientId("205730641287-b74p81rbe4np53rp120inn39mlve3jq5.apps.googleusercontent.com", null);
 
 final scopes = [drive.DriveApi.DriveMetadataReadonlyScope, drive.DriveApi.DriveReadonlyScope];
-
-class File {
-  drive.File driveFile;
-  bool isHidden;
-  String icon;
-  String timestamp;
-  String title;
-  bool isFolder;
-
-  File(drive.File _file, bool _isHidden, String _icon) {
-    driveFile = _file;
-    icon = _icon;
-    isHidden = _isHidden;
-    title = _file.name.toString();
-    isFolder = (_file.mimeType == 'application/vnd.google-apps.folder');
-
-    bool isMatch = new RegExp(r"^\d{8}").hasMatch(title);
-    if (isMatch) {
-      timestamp = title.substring(0, 8);
-    } else if (isFolder) {
-      // 不正なタイトルでも許容する
-      timestamp = null;
-    } else {
-      DivElement divError = querySelector('#error');
-      divError.appendHtml("「" + title + "」が不正なタイトルです。");
-      divError.append(new BRElement());
-      timestamp = null;
-    }
-  }
-}
 
 class Folder {
   String hash;
@@ -57,10 +29,10 @@ class Folder {
   }
 }
 
-List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
-  List<File> files = new List<File>();
+List<MtgFile> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
+  List<MtgFile> files = new List<MtgFile>();
   for (drive.File driveFile in _files) {
-    File file = new File(driveFile, _isHidden, _icon);
+    MtgFile file = new MtgFile(driveFile, _isHidden, _icon);
     if (file.timestamp != null) {
       files.add(file);
     } else if (file.isFolder) {
@@ -70,9 +42,9 @@ List<File> toFileList(List<drive.File> _files, bool _isHidden, String _icon) {
   return files;
 }
 
-List<File> filter(List<File> _files, Pattern pattern) {
-  List<File> result = new List<File>();
-  for (File file in _files) {
+List<MtgFile> filter(List<MtgFile> _files, Pattern pattern) {
+  List<MtgFile> result = new List<MtgFile>();
+  for (MtgFile file in _files) {
     if (file.driveFile.name.contains(pattern)) {
       result.add(file);
     }
@@ -89,7 +61,7 @@ void main() {
     DivElement login = querySelector('#login');
     login.remove();
 
-    List<File> files = new List<File>();
+    List<MtgFile> files = new List<MtgFile>();
     int pageSize = 100;
 
     List<Folder> folders = new List<Folder>();
@@ -114,7 +86,7 @@ void main() {
   });
 }
 
-void insertSearchView(List<File> files) {
+void insertSearchView(List<MtgFile> files) {
   var search = querySelector('#search');
 
   SpanElement span = new SpanElement();
@@ -124,7 +96,7 @@ void insertSearchView(List<File> files) {
   TextInputElement input = new TextInputElement();
   input.onInput.listen((e) {
     removeDocument();
-    List<File> filteredFiles = filter(files, input.value);
+    List<MtgFile> filteredFiles = filter(files, input.value);
     loadDocuments(filteredFiles);
   });
   window.onKeyUp.listen((KeyboardEvent e) {
@@ -135,7 +107,7 @@ void insertSearchView(List<File> files) {
   search.append(input);
 }
 
-void insertFilterView(drive.DriveApi api, List<Folder> folders, List<File> files, int pageSize) {
+void insertFilterView(drive.DriveApi api, List<Folder> folders, List<MtgFile> files, int pageSize) {
   var filterDiv = querySelector('#filter');
 
   SpanElement divCount = new SpanElement();
@@ -160,13 +132,13 @@ void insertFilterView(drive.DriveApi api, List<Folder> folders, List<File> files
   filterDiv.append(select);
 }
 
-void loadDriveFiles(drive.DriveApi api, List<Folder> folders, List<File> files, int pageSize) {
+void loadDriveFiles(drive.DriveApi api, List<Folder> folders, List<MtgFile> files, int pageSize) {
   folders.forEach((Folder folder) {
     api.files.list(orderBy: 'createdTime desc', q: "'" + folder.hash + "' in parents", pageSize: pageSize).then((list) {
       window.console.log(folder.hash);
       files.addAll(toFileList(list.files, folder.isHidden, folder.imagePath));
 
-      files.sort((a, b) => b.title.compareTo(a.title));
+      files.sort((a, b) => b.originalTitle.compareTo(a.originalTitle));
       removeDocument();
       loadDocuments(files);
     });
@@ -233,7 +205,7 @@ void setupMainView() {
   mainDiv.append(searched);
 }
 
-void loadDocuments(List<File> files) {
+void loadDocuments(List<MtgFile> files) {
   DivElement folderDocuments = querySelector('#folder_documents');
   DivElement todayDocuments = querySelector('#today_documents');
   DivElement lastWeek = querySelector('#last_week_documents');
@@ -259,7 +231,7 @@ void loadDocuments(List<File> files) {
 
   String today = getToday();
   String oneWeekAgo = getOneWeekAgo();
-  for (File file in files) {
+  for (MtgFile file in files) {
     String name = file.driveFile.name.toString();
     if (name.startsWith(new RegExp(r'^' + today))) {
       todayDocuments.append(createAnchorElement(file));
@@ -275,7 +247,7 @@ void loadDocuments(List<File> files) {
   }
 }
 
-Element createAnchorElement(File file) {
+Element createAnchorElement(MtgFile file) {
   LIElement li = new LIElement();
   if (file.isFolder) {
     li.setAttribute('class', 'link hidden');
