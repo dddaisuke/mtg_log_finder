@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html';
+import 'dart:js' as js;
 
 import 'file.dart';
 
@@ -49,6 +50,53 @@ List<MtgFile> filter(List<MtgFile> _files, Pattern pattern) {
 }
 
 void main() {
+  setupBackground();
+  DivElement header = querySelector('#header');
+  ImageElement gearElement = new ImageElement(src: "images/gear-16.png");
+  header.append(gearElement);
+
+  DivElement menu = querySelector('#popup_menu');
+  ButtonElement saveButton = new ButtonElement();
+  saveButton.text = "保存";
+  InputElement input = new InputElement();
+  input.onKeyPress.listen((e) {
+    if(e.keyCode == KeyCode.ENTER) {
+      saveButton.click();
+    }
+  });
+
+  menu.append(input);
+  menu.append(saveButton);
+  saveButton.onClick.listen((e) {
+    window.localStorage['photoSearchWord'] = input.value;
+    closePopupWindow();
+    if(input.value != "") {
+      updateBackground(input.value);
+    }
+  });
+
+  DivElement grayPanel = querySelector('#gray_panel');
+  grayPanel.onClick.listen((e) {
+    closePopupWindow();
+  });
+
+  js.context.callMethod(r'$', ['#gray_panel'])
+    .callMethod('css', [new js.JsObject.jsify({
+    "background" : "#000",
+    "opacity"  : "0.5",
+    "width"   : "100%",
+    "height"  : 99999,
+    "position"  : "fixed",
+    "top"   : "0",
+    "left"   : "0",
+    "display"  : "none",
+    "z-index"  : "101"
+  })]);
+
+  gearElement.onClick.listen((e) {
+    openPopupWindow();
+  });
+
   InputElement loginButton = querySelector('#login_button');
 
   authorizedClient(loginButton, identifier, scopes).then((client) {
@@ -138,6 +186,48 @@ List<List<String>> getMonths() {
     default:
       throw new Error();
   }
+}
+
+void setupBackground() {
+  String keyword = window.localStorage['photoSearchWord'];
+  if(keyword != null) {
+    window.console.log("[load] "+keyword);
+  } else {
+    keyword = "summer";
+  }
+  updateBackground(keyword);
+}
+
+void updateBackground(String photoSearchKeyWord) {
+  DivElement body = querySelector("#body");
+  body.style.setProperty("background-image", "url('//source.unsplash.com/1024x768?" + photoSearchKeyWord + "')");
+}
+
+void openPopupWindow() {
+  js.context.callMethod(r'$', ['#gray_panel'])
+    .callMethod('fadeIn', ["slow"]);
+
+  DivElement body = querySelector("#body");
+  DivElement menu = querySelector('#popup_menu');
+  var position = (body.offsetWidth / 2) - (menu.offsetWidth / 2);
+  window.console.log(position);
+
+  js.context.callMethod(r'$', ['#popup_menu'])
+    .callMethod('css', [new js.JsObject.jsify({
+    "z-index"  : "102",
+    "position"  : "fixed",
+    "top"   : "270px",
+    "left"   : position,
+  })]);
+  js.context.callMethod(r'$', ['#popup_menu'])
+    .callMethod('fadeIn', ["slow"]);
+}
+
+void closePopupWindow() {
+  js.context.callMethod(r'$', ['#popup_menu'])
+    .callMethod('fadeOut', ["slow"]);
+  js.context.callMethod(r'$', ['#gray_panel'])
+    .callMethod('fadeOut', ["slow"]);
 }
 
 void insertSearchView(List<MtgFile> files) {
