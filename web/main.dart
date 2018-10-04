@@ -61,27 +61,83 @@ void main() {
     int pageSize = 100;
 
     List<Folder> folders = new List<Folder>();
-    folders.add(new Folder('1jHZasBcxbUarzCx3k6xtl-Y6DY4IHtGu', false, null, 'manabo/MtgLogs/2018/2018_2Q'));
-    folders.add(new Folder('10PM5DJr3uc6mSWChFzPEahEYviWx3LzV', false, null, 'manabo/MtgLogs/2018/2018_1Q'));
-//    folders.add(new Folder('1YdzV1HFp2gT4mwuAVZtvt_lvnHpPpfIg', false, null, 'manabo/MtgLogs/2017/2017_4Q'));
-//    folders.add(new Folder('0B7gIZmKENAt5d0dhODhNbkZNUnM', false, null, 'manabo/MtgLogs/2017/2017_3Q'));
-//    folders.add(new Folder('0B7gIZmKENAt5SERvaW9uVGhPd1k', false, null, 'manabo/MtgLogs/2017/2017_2Q'));
-//    folders.add(new Folder('0B4oiy9QA-HVNaEp2ejdWamlHVzg', true, 'images/ethereum-16.png', 'ICO/MtgLogs'));
-    folders.add(new Folder('1GPcwnLVzMhhU3jjrJA0Rdi6Vw2YQHCrw', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2018/2018_2Q'));
-    folders.add(new Folder('1nllhepAqxccAKI87FjBkkt4zcIQ6Y9YT', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2018/2018_1Q'));
-//    folders.add(new Folder('1fuimW9T80vOV1MvWE2UJRCfZJhmVp9qh', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_4Q'));
-//    folders.add(new Folder('0B2t1uXRrSZ4SQXpZd3JoYjFKaTQ', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_3Q'));
-//    folders.add(new Folder('0B7gIZmKENAt5ejZKOFR0b2hQVU0', true, 'images/private-16.png', 'Confidentials/ConfidentialMtgLogs/2017/2017_2Q'));
-    folders.add(new Folder('1FZr34hrkpzeNuVNXNEmM5SRDvUmIoilv', true, 'images/up-16.png', '取締役会議事録'));
-    folders.add(new Folder('0B2t1uXRrSZ4SMnA5SWFDWHd0WGs', true, 'images/private-16.png', 'エンジニア面談'));
 
     setupMainView();
 
-    insertFilterView(api, folders, files, pageSize);
-    insertSearchView(files);
+    List<Future<Folder>> listMtgLogs = findFolders(api, '0B2t1uXRrSZ4Sb3N3RUZYS0R2dGM', false, null); // MtgLogs
+    List<Future<Folder>> listConfidentialMtgLogs = findFolders(api, '0B4oiy9QA-HVNa3dHNnIwcWlHbFk', true, 'images/private-16.png'); // ConfidentialMtgLogs
 
-    loadDriveFiles(api, folders, files, pageSize);
+    List<Future<Folder>> list = new List<Future<Folder>>();
+    list.addAll(listMtgLogs);
+    list.addAll(listConfidentialMtgLogs);
+
+    var futureFolderList = Future.wait(list);
+    futureFolderList.then((List<Folder> folderList) {
+      folders.addAll(folderList);
+
+      insertFilterView(api, folders, files, pageSize);
+      insertSearchView(files);
+
+      loadDriveFiles(api, folders, files, pageSize);
+    });
   });
+}
+
+List<Future<Folder>> findFolders(drive.DriveApi api, String rootFolderId, bool isHidden, String imagePath) {
+  int pageSize = 100;
+  List<List<String>> months = getMonths();
+
+  List<Future<Folder>> asyncFolderList = new List<Future<Folder>>();
+  months.forEach((targetFolder) {
+    Future<Folder> folder = api.files.list(orderBy: 'createdTime desc', q: "'" + rootFolderId + "' in parents AND name = '" + targetFolder.first + "'", pageSize: pageSize).then((list) {
+      drive.File folderYear = list.files.first;
+      if(folderYear == null) {
+        DivElement divError = querySelector('#error');
+        divError.appendHtml("「${targetFolder.first}」フォルダーが見つかりませんでした。");
+        divError.append(new BRElement());
+        return null;
+      }
+
+      var asyncFunc = api.files.list(orderBy: 'createdTime desc', q: "'" + folderYear.id + "' in parents AND name = '" + targetFolder.last + "'", pageSize: pageSize).then((list) {
+        if(list.files.length == 0) {
+          DivElement divError = querySelector('#error');
+          divError.appendHtml("「${targetFolder.last}」フォルダーが見つかりませんでした。");
+          divError.append(new BRElement());
+          return null;
+        }
+        return new Folder(list.files.first.id, isHidden, imagePath, "${targetFolder.first}/${targetFolder.last}");
+      });
+      return asyncFunc;
+    });
+
+    asyncFolderList.add(folder);
+  });
+  return asyncFolderList;
+}
+
+List<List<String>> getMonths() {
+  DateTime now = new DateTime.now();
+  window.console.log("aaa ${now.month}");
+  switch(now.month) {
+    case 4:
+    case 5:
+    case 6:
+      return [["${now.year-1}", "${now.year}_4Q"], ["${now.year}", "${now.year}_1Q"]];
+    case 7:
+    case 8:
+    case 9:
+      return [["${now.year}", "${now.year}_1Q"], ["${now.year}", "${now.year}_2Q"]];
+    case 10:
+    case 11:
+    case 12:
+      return [["${now.year}", "${now.year}_2Q"], ["${now.year}", "${now.year}_3Q"]];
+    case 1:
+    case 2:
+    case 3:
+      return [["${now.year}", "${now.year}_3Q"], ["${now.year}", "${now.year}_4Q"]];
+    default:
+      throw new Error();
+  }
 }
 
 void insertSearchView(List<MtgFile> files) {
@@ -132,14 +188,16 @@ void insertFilterView(drive.DriveApi api, List<Folder> folders, List<MtgFile> fi
 
 void loadDriveFiles(drive.DriveApi api, List<Folder> folders, List<MtgFile> files, int pageSize) {
   folders.forEach((Folder folder) {
-    api.files.list(orderBy: 'createdTime desc', q: "'" + folder.hash + "' in parents", pageSize: pageSize).then((list) {
-      window.console.log(folder.hash);
-      files.addAll(toFileList(list.files, folder.isHidden, folder.imagePath));
+    if(folder != null) {
+      api.files.list(orderBy: 'createdTime desc', q: "'" + folder.hash + "' in parents", pageSize: pageSize).then((list) {
+        //window.console.log(folder.hash);
+        files.addAll(toFileList(list.files, folder.isHidden, folder.imagePath));
 
-      files.sort((a, b) => b.originalTitle.compareTo(a.originalTitle));
-      removeDocument();
-      loadDocuments(files);
-    });
+        files.sort((a, b) => b.originalTitle.compareTo(a.originalTitle));
+        removeDocument();
+        loadDocuments(files);
+      });
+    }
   });
 }
 
